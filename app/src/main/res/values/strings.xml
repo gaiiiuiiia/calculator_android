@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">calculator_1</string>
+
+    <string name="sign_clear">C</string>
+    <string name="sign_brackets">( )</string>
+    <string name="sign_percent">&#37;</string>
+    <string name="sign_div">&#247;</string>
+    <string name="sign_mul">&#215;</string>
+    <string name="sign_sub">&#8722;</string>
+    <string name="sign_pls">&#43;</string>
+    <string name="sign_eq">&#61;</string>
+    <string name="sign_switchSign">+/-</string>
+    <string name="sign_point">.</string>
+
+    <string name="num_0">0</string>
+    <string name="num_1">1</string>
+    <string name="num_2">2</string>
+    <string name="num_3">3</string>
+    <string name="num_4">4</string>
+    <string name="num_5">5</string>
+    <string name="num_6">6</string>
+    <string name="num_7">7</string>
+    <string name="num_8">8</string>
+    <string name="num_9">9</string>
+
+</resources>
