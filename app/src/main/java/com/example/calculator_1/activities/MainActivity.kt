@@ -1,4 +1,4 @@
-package com.example.calculator_1
+package com.example.calculator_1.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,8 +11,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.hide()  // hide program name on top side bar
         mainScreen = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainScreen.root)
+
 
     }
 }
