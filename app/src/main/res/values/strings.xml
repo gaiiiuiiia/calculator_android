@@ -2,12 +2,13 @@
     <string name="app_name">calculator_1</string>
 
     <string name="sign_clear">C</string>
-    <string name="sign_brackets">&#40; &#41;</string>
+    <string name="sign_bracketOpen">&#40;</string>
+    <string name="sign_bracketClose">&#41;</string>
     <string name="sign_percent">&#37;</string>
     <string name="sign_div">&#247;</string>
     <string name="sign_mul">&#215;</string>
     <string name="sign_sub">&#8722;</string>
-    <string name="sign_pls">&#43;</string>
+    <string name="sign_add">&#43;</string>
     <string name="sign_eq">&#61;</string>
     <string name="sign_switchSign">&#43;&#47;&#8722;</string>
     <string name="sign_point">.</string>
@@ -24,5 +25,8 @@
     <string name="num_7">7</string>
     <string name="num_8">8</string>
     <string name="num_9">9</string>
+
+    <string name="answer_string">here is answer</string>
+    <string name="bracket_left">(</string>
 
 </resources>
