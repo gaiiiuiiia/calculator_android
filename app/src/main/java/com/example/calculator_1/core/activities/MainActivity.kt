@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     private fun miniTests() {
 
         //testing model
