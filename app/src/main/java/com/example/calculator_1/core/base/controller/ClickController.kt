@@ -14,7 +14,6 @@ open class ClickController(private val screen: ActivityMainBinding) {
     val MEDIUM_TEXT_SIZE = 48F
     val SMALL_TEXT_SIZE = 36F
 
-
     fun setOnclickListeners() {
 
         setListenerOnInputField()
@@ -136,7 +135,37 @@ open class ClickController(private val screen: ActivityMainBinding) {
         }
     }
 
-    private fun isNumber(str: String?) = str?.toDoubleOrNull()?.let { true } ?: false
+    private fun numBtnListener(btnTag: String): View.OnClickListener {
+        return View.OnClickListener {
+            // если мы не ноль кликаем с самого начала
+            if (btnTag != "0" || screen.inputText.text.isNotEmpty()) {
+                if (getLastCharFromInput() == ")") {
+                    screen.inputText.text.append("*")
+                }
+                screen.inputText.text = screen.inputText.text.append(btnTag)
+            }
+        }
+    }
+
+    private fun operatorBtnListener(btnTag: String): View.OnClickListener {
+        return View.OnClickListener {
+            var operator = ""
+            when (btnTag) {
+                "div" -> operator = Operator.DIV.value
+                "mul" -> operator = Operator.MUL.value
+                "sub" -> operator = Operator.SUB.value
+                "add" -> operator = Operator.ADD.value
+            }
+
+            val lastToken = getLastInputToken()
+            if (isOperator(lastToken)) {
+                deleteFromInput(screen.inputText.text.length - 1)
+                addToInput(screen.inputText.text.length, operator)
+            } else if ((isNumber(lastToken) || lastToken == ")") || lastToken == "(" && operator == "-") {
+                addToInput(-1, operator)
+            }
+        }
+    }
 
     private fun addToInput(position: Int = 0, value: String): Boolean {
         val inputTextLength = screen.inputText.text.length
@@ -171,51 +200,6 @@ open class ClickController(private val screen: ActivityMainBinding) {
         } catch (e: Exception) {
             false
         }
-    }
-
-    private fun numBtnListener(btnTag: String): View.OnClickListener {
-        return View.OnClickListener {
-            // если мы не ноль кликаем с самого начала
-            if (btnTag != "0" || screen.inputText.text.isNotEmpty()) {
-                if (getLastCharFromInput() == ")") {
-                    screen.inputText.text.append("*")
-                }
-                screen.inputText.text = screen.inputText.text.append(btnTag)
-            }
-        }
-    }
-
-    private fun operatorBtnListener(btnTag: String): View.OnClickListener {
-        return View.OnClickListener {
-            var operator = ""
-            when (btnTag) {
-                "div" -> operator = Operator.DIV.value
-                "mul" -> operator = Operator.MUL.value
-                "sub" -> operator = Operator.SUB.value
-                "add" -> operator = Operator.ADD.value
-            }
-
-            val lastToken = getLastInputToken()
-            if (isOperator(lastToken)) {
-                deleteFromInput(screen.inputText.text.length - 1)
-                addToInput(screen.inputText.text.length, operator)
-            } else if ((isNumber(lastToken) || lastToken == ")") || lastToken == "(" && operator == "-") {
-                addToInput(-1, operator)
-            }
-        }
-    }
-
-    /**
-     * checking if input is not like ** or //// or ---- etc
-     * or if input is empty, we cant enter an operation sign
-     */
-    private fun isCorrectOperatorInput(operator: String): Boolean {
-        val lastChar = getLastCharFromInput()
-        if (lastChar.isNotEmpty() && !isOperator(lastChar)
-            || lastChar == "(" && (operator == "-" || operator == "+")) {
-            return true
-        }
-        return false
     }
 
     private fun getLastCharFromInput(): String {
@@ -268,5 +252,7 @@ open class ClickController(private val screen: ActivityMainBinding) {
     private fun isOperator(char: String): Boolean {
         return Operator.values().any { it.value == char }
     }
+
+    private fun isNumber(str: String?) = str?.toDoubleOrNull()?.let { true } ?: false
 
 }
