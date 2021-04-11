@@ -3,6 +3,8 @@ package com.example.calculator_1.core.base.controller
 
 import android.view.View
 import androidx.core.widget.addTextChangedListener
+import com.example.calculator_1.R
+import com.example.calculator_1.core.base.model.Model
 import com.example.calculator_1.core.data.Operator
 import com.example.calculator_1.databinding.ActivityMainBinding
 import java.lang.Exception
@@ -25,6 +27,7 @@ open class ClickController(private val screen: ActivityMainBinding) {
         setClickOnNumbersListener()
         setClickOnOperatorListener()
         setClickOnSwitchSignListener()
+        //setClickOnPointListener()
     }
 
     private fun setListenerOnInputField() {
@@ -36,7 +39,14 @@ open class ClickController(private val screen: ActivityMainBinding) {
     private fun setClickOnBtnEqListener() {
         screen.btnEq.setOnClickListener {
             screen.outputText.visibility = View.VISIBLE
-            screen.outputText.text = screen.inputText.text
+
+            Model.setExpression(screen.inputText.text.toString())
+            try {
+                val result = Model.calculate()
+                screen.outputText.setText(result.toString())
+            } catch (e: Exception) {
+                screen.outputText.setText(R.string.wrong_input)
+            }
         }
     }
 

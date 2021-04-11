@@ -13,7 +13,7 @@ class ArrayListStack<E> : Stack<E> {
 
     override fun pop(): E {
         val poppedElement = top()
-        stack.remove(poppedElement)
+        stack.removeAt(stack.lastIndex)
         return poppedElement
     }
 

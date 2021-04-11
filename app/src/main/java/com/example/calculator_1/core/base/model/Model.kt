@@ -4,6 +4,7 @@ import com.example.calculator_1.core.base.util.ArrayListStack
 import com.example.calculator_1.core.data.Operator
 import java.lang.Exception
 import java.util.*
+import kotlin.math.abs
 
 class Model {
 
@@ -23,9 +24,9 @@ class Model {
             this.expression = expression
         }
 
-        fun calculate() : Double {
+        fun calculate(): Number {
             val operatorStack: ArrayListStack<String> = ArrayListStack()
-            val numbersStack: ArrayListStack<String> = ArrayListStack()
+            var numbersStack: ArrayListStack<String> = ArrayListStack()
 
             var index = 0
             while (index != this.expression.length) {
@@ -33,32 +34,45 @@ class Model {
                 val currentSymbol = this.expression[index].toString()
 
                 // проверка на число/точку
-                if ( isNum(currentSymbol ) || currentSymbol == "." ) {
+                if (isNum(currentSymbol) || currentSymbol == ".") {
                     val (number, index_) = extractNumber(this.expression, index)
                     numbersStack.push(number)
                     index = index_
                 }
 
                 // проверка на оператор
-                else if ( isOperator(currentSymbol) ) {
+                else if (isOperator(currentSymbol)) {
+
+                    if (currentSymbol == "-" && index != 0 && this.expression[index - 1].toString() == "(") {
+                        val (number, index_) = extractNumber(this.expression, index + 1)
+                        numbersStack.push("-".plus(number))
+                        index = index_
+                        continue
+                    }
 
                     try {
-                        val operatorInStack = operatorStack.top()
 
-                        if ( operatorInStack == "(" ) {
-                            operatorStack.push(currentSymbol)
-                            index++
-                            continue
-                        }
+                        while (true) {
 
-                        while ( this.orderOperations[currentSymbol] ?: error("sorry, Boss!")
-                            <= this.orderOperations[operatorInStack] ?: error("sorry, Boss!") ) {
+                            val operatorInStack = operatorStack.top()
 
-                            val eval = evaluateTwoNumbersFromStack(numbersStack, operatorStack.pop())
-                            numbersStack.push(eval.toString())
+                            if (operatorInStack == "(" || operatorInStack == ")") {
+                                break
+                            }
+
+                            if (this.orderOperations[currentSymbol] ?: error("sorry, Boss!")
+                                <= this.orderOperations[operatorInStack] ?: error("sorry, Boss!")
+                            ) {
+                                val eval =
+                                    evaluateTwoNumbersFromStack(numbersStack, operatorStack.pop())
+                                numbersStack.push(eval.toString())
+                            } else {
+                                break
+                            }
                         }
                         operatorStack.push(currentSymbol)
                         index++
+
                     } catch (e: EmptyStackException) {
                         operatorStack.push(currentSymbol)
                         index++
@@ -66,12 +80,13 @@ class Model {
                 }
 
                 // проверка на закрывающуюся скобку
-                else if ( currentSymbol == ")" ) {
+                else if (currentSymbol == ")") {
 
                     try {
-                        while ( operatorStack.top() != "(" ) {
+                        while (operatorStack.top() != "(") {
                             // сделать вычисление результата из двух чисел в стеке
-                            val eval = evaluateTwoNumbersFromStack(numbersStack, operatorStack.pop())
+                            val eval =
+                                evaluateTwoNumbersFromStack(numbersStack, operatorStack.pop())
                             numbersStack.push(eval.toString())
                         }
                         operatorStack.pop()
@@ -80,27 +95,34 @@ class Model {
                         index++
                     }
 
-                }
-
-                else if ( currentSymbol == "(" ) {
+                } else if (currentSymbol == "(") {
                     operatorStack.push(currentSymbol)
                     index++
                 }
             }
 
-            return if ( !operatorStack.isEmpty() && !numbersStack.isEmpty() )  {
-                evaluateTwoNumbersFromStack(numbersStack, operatorStack.pop())!!
-            } else if ( operatorStack.isEmpty() && !numbersStack.isEmpty() ) {
-                numbersStack.pop().toDouble()
+            return if (!operatorStack.isEmpty() && !numbersStack.isEmpty()) {
+                numbersStack = collectResultFromStacks(numbersStack, operatorStack)
+                clearNumber(numbersStack.pop().toDouble())
+            } else if (operatorStack.isEmpty() && !numbersStack.isEmpty()) {
+                clearNumber(numbersStack.pop().toDouble())
             } else {
                 throw Exception("incorrect output")
             }
 
         }
 
-        fun evaluateTwoNumbersFromStack(stack: ArrayListStack<String>, operation: String) : Double? {
-            val num1 = stack.pop().toDouble()
-            val num2 = stack.pop().toDouble()
+        fun clearNumber(number: Double): Number {
+            val intNumber = number.toInt()
+            return if (abs(number - intNumber) > 0) number else intNumber
+        }
+
+        fun evaluateTwoNumbersFromStack(
+            numberStack: ArrayListStack<String>,
+            operation: String
+        ): Double? {
+            val num1 = numberStack.pop().toDouble()
+            val num2 = numberStack.pop().toDouble()
             var result: Double? = null
 
             // порядок следования чисел в методах должен быть num2, num1 !
@@ -112,6 +134,23 @@ class Model {
             }
 
             return result
+        }
+
+        /**
+         * подсчет результата со стеков
+         */
+        fun collectResultFromStacks(
+            numberStack: ArrayListStack<String>,
+            operatorStack: ArrayListStack<String>
+        ): ArrayListStack<String> {
+            try {
+                while (operatorStack.top().isNotEmpty()) {
+                    val res = evaluateTwoNumbersFromStack(numberStack, operatorStack.pop())
+                    numberStack.push(res.toString())
+                }
+            } catch (e: EmptyStackException) {
+            }
+            return numberStack
         }
 
         fun addt(num1: Double, num2: Double): Double = num1 + num2
@@ -133,14 +172,16 @@ class Model {
          */
         fun extractNumber(string: String, index: Int): Pair<String, Int> {
             var resultNumber = ""
+            var lastIndex = 0
 
             for (i in index until string.length) {
                 if (!isNum(string[i].toString())) {
                     break
                 }
                 resultNumber = resultNumber.plus(string[i])
+                lastIndex = i
             }
-            return Pair(resultNumber, index + 1)
+            return Pair(resultNumber, lastIndex + 1)
         }
     }
 }
