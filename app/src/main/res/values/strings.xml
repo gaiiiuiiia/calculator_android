@@ -26,7 +26,7 @@
     <string name="num_8">8</string>
     <string name="num_9">9</string>
 
-    <string name="answer_string">here is answer</string>
+    <string name="wrong_input">Wrong input</string>
     <string name="bracket_left">(</string>
 
 </resources>
