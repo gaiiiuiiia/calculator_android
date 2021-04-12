@@ -2,6 +2,7 @@ package com.example.calculator_1.core.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import com.example.calculator_1.core.base.controller.ClickController
 import com.example.calculator_1.core.base.model.Model
 import com.example.calculator_1.databinding.ActivityMainBinding
@@ -30,6 +31,18 @@ class MainActivity : AppCompatActivity() {
 
         clickController = ClickController(mainScreen)
         clickController.setOnclickListeners()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("inputString", mainScreen.inputText.text.toString())
+        outState.putString("outputString", mainScreen.outputText.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        mainScreen.inputText.setText(savedInstanceState.getString("inputString"))
+        mainScreen.outputText.setText(savedInstanceState.getString("outputString"))
     }
 
     private fun miniTests() {
