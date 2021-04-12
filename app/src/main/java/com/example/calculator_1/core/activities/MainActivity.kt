@@ -28,11 +28,8 @@ class MainActivity : AppCompatActivity() {
             exitProcess(0)
         }
 
-
         clickController = ClickController(mainScreen)
         clickController.setOnclickListeners()
-
-
     }
 
     private fun miniTests() {
@@ -104,6 +101,18 @@ class MainActivity : AppCompatActivity() {
             testResult.add(Model.calculate() == -228)
 
             Model.setExpression("2+5*((3-8)*9-6)+5-2*2")
+            testResult.add(Model.calculate() == -252)
+
+            Model.setExpression("2.0+5*((3-8)*9-6)+5-2*2")
+            testResult.add(Model.calculate() == -252)
+
+            Model.setExpression("2+5.00*((3-8)*9-6)+5-2*2.0")
+            testResult.add(Model.calculate() == -252)
+
+            Model.setExpression("2.9+5*((3-8.0)*9-6)+5-2*2")
+            testResult.add(Model.calculate() == -251.1)
+
+            Model.setExpression("2+5*((3.1-8.1)*9-6)+5-2*2")
             testResult.add(Model.calculate() == -252)
 
             return testResult.all { it }

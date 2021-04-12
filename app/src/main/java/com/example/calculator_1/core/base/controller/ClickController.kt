@@ -27,7 +27,7 @@ open class ClickController(private val screen: ActivityMainBinding) {
         setClickOnNumbersListener()
         setClickOnOperatorListener()
         setClickOnSwitchSignListener()
-        //setClickOnPointListener()
+        setClickOnPointListener()
     }
 
     private fun setListenerOnInputField() {
@@ -142,6 +142,26 @@ open class ClickController(private val screen: ActivityMainBinding) {
             } else {
                 addToInput(value = "(-")
             }
+        }
+    }
+
+    private fun setClickOnPointListener() {
+        screen.btnPoint.setOnClickListener {
+
+            var value = ""
+
+            value = when {
+                screen.inputText.text.isEmpty() -> {
+                    "0."
+                }
+                screen.inputText.text[screen.inputText.text.lastIndex].toString() != "." -> {
+                    screen.inputText.text.toString().plus(".")
+                }
+                else -> {
+                    screen.inputText.text.substring(0, screen.inputText.text.lastIndex)
+                }
+            }
+            screen.inputText.setText(value)
         }
     }
 

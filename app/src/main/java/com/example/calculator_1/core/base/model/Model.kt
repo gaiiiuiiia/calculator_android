@@ -175,7 +175,7 @@ class Model {
             var lastIndex = 0
 
             for (i in index until string.length) {
-                if (!isNum(string[i].toString())) {
+                if ( !isNum(string[i].toString()) && string[i].toString() != "." ) {
                     break
                 }
                 resultNumber = resultNumber.plus(string[i])
