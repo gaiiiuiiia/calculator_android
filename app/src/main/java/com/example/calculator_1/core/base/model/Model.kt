@@ -5,6 +5,8 @@ import com.example.calculator_1.core.data.Operator
 import java.lang.Exception
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
 
 class Model {
 
@@ -24,7 +26,7 @@ class Model {
             this.expression = expression
         }
 
-        fun calculate(): Number {
+        fun calculate(): String {
             val operatorStack: ArrayListStack<String> = ArrayListStack()
             var numbersStack: ArrayListStack<String> = ArrayListStack()
 
@@ -43,11 +45,13 @@ class Model {
                 // проверка на оператор
                 else if (isOperator(currentSymbol)) {
 
-                    if (currentSymbol == "-" && index != 0 && this.expression[index - 1].toString() == "(") {
-                        val (number, index_) = extractNumber(this.expression, index + 1)
-                        numbersStack.push("-".plus(number))
-                        index = index_
-                        continue
+                    if (index + 1 < this.expression.length) {
+                        if (currentSymbol == "-" && index != 0 && this.expression[index - 1].toString() == "(") {
+                            val (number, index_) = extractNumber(this.expression, index + 1)
+                            numbersStack.push("-".plus(number))
+                            index = index_
+                            continue
+                        }
                     }
 
                     try {
@@ -103,18 +107,17 @@ class Model {
 
             return if (!operatorStack.isEmpty() && !numbersStack.isEmpty()) {
                 numbersStack = collectResultFromStacks(numbersStack, operatorStack)
-                clearNumber(numbersStack.pop().toDouble())
+                clearNumber(numbersStack.pop())
             } else if (operatorStack.isEmpty() && !numbersStack.isEmpty()) {
-                clearNumber(numbersStack.pop().toDouble())
+                clearNumber(numbersStack.pop())
             } else {
                 throw Exception("incorrect output")
             }
 
         }
 
-        fun clearNumber(number: Double): Number {
-            val intNumber = number.toInt()
-            return if (abs(number - intNumber) > 0) number else intNumber
+        fun clearNumber(number: String): String {
+            return number.replace(Regex("\\.0*$"), "")
         }
 
         fun evaluateTwoNumbersFromStack(

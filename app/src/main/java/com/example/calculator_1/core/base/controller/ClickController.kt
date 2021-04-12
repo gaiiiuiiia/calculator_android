@@ -33,17 +33,24 @@ open class ClickController(private val screen: ActivityMainBinding) {
     private fun setListenerOnInputField() {
         screen.inputText.addTextChangedListener {
             fitSizeOnInputField()
+            if (screen.inputText.text.isNotEmpty()) {
+                screen.outputText.visibility = View.VISIBLE
+                try {
+                    Model.setExpression(screen.inputText.text.toString())
+                    screen.outputText.setText(Model.calculate().toString())
+                } catch (e: Exception) { }
+            } else {
+                screen.outputText.visibility = View.INVISIBLE
+            }
         }
     }
 
     private fun setClickOnBtnEqListener() {
         screen.btnEq.setOnClickListener {
-            screen.outputText.visibility = View.VISIBLE
-
-            Model.setExpression(screen.inputText.text.toString())
             try {
-                val result = Model.calculate()
-                screen.outputText.setText(result.toString())
+                Model.setExpression(screen.inputText.text.toString())
+                screen.outputText.text.clear()
+                screen.inputText.setText(Model.calculate().toString())
             } catch (e: Exception) {
                 screen.outputText.setText(R.string.wrong_input)
             }

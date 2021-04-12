@@ -67,11 +67,11 @@ class MainActivity : AppCompatActivity() {
 
         val testClearNumber = fun(): Boolean {
             return listOf(
-                Model.clearNumber(3.1) == 3.1,
-                Model.clearNumber(-5.1) == -5.1,
-                Model.clearNumber(0.0) == 0,
-                Model.clearNumber(15.0) == 15,
-                Model.clearNumber(-15.0) == -15
+                Model.clearNumber("3.1") == "3.1",
+                Model.clearNumber("-5.1") == "-5.1",
+                Model.clearNumber("0.0") == "0",
+                Model.clearNumber("15.0") == "15",
+                Model.clearNumber("-15.0") == "-15"
             ).all { it }
         }
 
@@ -80,40 +80,40 @@ class MainActivity : AppCompatActivity() {
             val testResult = mutableListOf<Boolean>()
 
             Model.setExpression("9+3-(2+8)")
-            testResult.add(Model.calculate() == 2)
+            testResult.add(Model.calculate() == "2")
 
             Model.setExpression("54-6")
-            testResult.add(Model.calculate() == 48)
+            testResult.add(Model.calculate() == "48")
 
             Model.setExpression("(-3)-5")
-            testResult.add(Model.calculate() == -8)
+            testResult.add(Model.calculate() == "-8")
 
             Model.setExpression("2*15")
-            testResult.add(Model.calculate() == 30)
+            testResult.add(Model.calculate() == "30")
 
             Model.setExpression("2*2-2")
-            testResult.add(Model.calculate() == 2)
+            testResult.add(Model.calculate() == "2")
 
             Model.setExpression("2+5*3-8*9-6+5-2*2")
-            testResult.add(Model.calculate() == -60)
+            testResult.add(Model.calculate() == "-60")
 
             Model.setExpression("2+5*(3-8)*9-6+5-2*2")
-            testResult.add(Model.calculate() == -228)
+            testResult.add(Model.calculate() == "-228")
 
             Model.setExpression("2+5*((3-8)*9-6)+5-2*2")
-            testResult.add(Model.calculate() == -252)
+            testResult.add(Model.calculate() == "-252")
 
             Model.setExpression("2.0+5*((3-8)*9-6)+5-2*2")
-            testResult.add(Model.calculate() == -252)
+            testResult.add(Model.calculate() == "-252")
 
             Model.setExpression("2+5.00*((3-8)*9-6)+5-2*2.0")
-            testResult.add(Model.calculate() == -252)
+            testResult.add(Model.calculate() == "-252")
 
             Model.setExpression("2.9+5*((3-8.0)*9-6)+5-2*2")
-            testResult.add(Model.calculate() == -251.1)
+            testResult.add(Model.calculate() == "-251.1")
 
             Model.setExpression("2+5*((3.1-8.1)*9-6)+5-2*2")
-            testResult.add(Model.calculate() == -252)
+            testResult.add(Model.calculate() == "-252")
 
             return testResult.all { it }
         }
