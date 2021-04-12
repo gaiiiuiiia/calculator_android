@@ -1,6 +1,8 @@
 package com.example.calculator_1.core.base.controller
 
 
+import android.animation.LayoutTransition
+import android.view.Display
 import android.view.View
 import androidx.core.widget.addTextChangedListener
 import com.example.calculator_1.R
@@ -28,6 +30,10 @@ open class ClickController(private val screen: ActivityMainBinding) {
         setClickOnOperatorListener()
         setClickOnSwitchSignListener()
         setClickOnPointListener()
+
+        setClickOnPowListener()
+        setClickOnSqrtListener()
+        setClickOnReverseListener()
     }
 
     private fun setListenerOnInputField() {
@@ -37,8 +43,9 @@ open class ClickController(private val screen: ActivityMainBinding) {
                 screen.outputText.visibility = View.VISIBLE
                 try {
                     Model.setExpression(screen.inputText.text.toString())
-                    screen.outputText.setText(Model.calculate().toString())
-                } catch (e: Exception) { }
+                    screen.outputText.setText(Model.calculate())
+                } catch (e: Exception) {
+                }
             } else {
                 screen.outputText.visibility = View.INVISIBLE
             }
@@ -59,8 +66,8 @@ open class ClickController(private val screen: ActivityMainBinding) {
 
     private fun setClickOnBtnBracketsListener() {
         listOf(
-                screen.btnBracketOpen,
-                screen.btnBracketClose
+            screen.btnBracketOpen,
+            screen.btnBracketClose
         ).forEach { button ->
             button.setOnClickListener {
                 var text = ""
@@ -94,16 +101,16 @@ open class ClickController(private val screen: ActivityMainBinding) {
     private fun setClickOnNumbersListener() {
 
         listOf(
-                screen.btnNum0,
-                screen.btnNum1,
-                screen.btnNum2,
-                screen.btnNum3,
-                screen.btnNum4,
-                screen.btnNum5,
-                screen.btnNum7,
-                screen.btnNum8,
-                screen.btnNum6,
-                screen.btnNum9
+            screen.btnNum0,
+            screen.btnNum1,
+            screen.btnNum2,
+            screen.btnNum3,
+            screen.btnNum4,
+            screen.btnNum5,
+            screen.btnNum7,
+            screen.btnNum8,
+            screen.btnNum6,
+            screen.btnNum9
         ).forEach {
             it.setOnClickListener(numBtnListener(it.tag.toString()))
         }
@@ -112,10 +119,10 @@ open class ClickController(private val screen: ActivityMainBinding) {
     private fun setClickOnOperatorListener() {
 
         listOf(
-                screen.btnDiv,
-                screen.btnMul,
-                screen.btnSub,
-                screen.btnAdd
+            screen.btnDiv,
+            screen.btnMul,
+            screen.btnSub,
+            screen.btnAdd
         ).forEach {
             it.setOnClickListener(operatorBtnListener(it.tag.toString()))
         }
@@ -172,6 +179,57 @@ open class ClickController(private val screen: ActivityMainBinding) {
         }
     }
 
+    private fun setClickOnPowListener() {
+        screen.btnPow?.setOnClickListener {
+            var value = ""
+
+            value = when {
+                screen.inputText.text.isNotEmpty()
+                        && isNumber(screen.inputText.text[screen.inputText.text.lastIndex].toString()) -> {
+                    "^("
+                }
+                else -> {
+                    ""
+                }
+            }
+            addToInput(-1, value)
+        }
+    }
+
+    private fun setClickOnSqrtListener() {
+        screen.btnSqrt?.setOnClickListener {
+            if (screen.inputText.text.isNotEmpty()) {
+                try{
+                    Model.setExpression(screen.inputText.text.toString())
+                    val res = Model.calculate()
+                    Model.setExpression("${res}^(0.5)")
+                    val sqrt = Model.calculate()
+                    screen.inputText.setText(sqrt)
+                    screen.outputText.setText(sqrt)
+                } catch (e: Exception) {
+                    screen.outputText.setText(R.string.wrong_input)
+                }
+            }
+        }
+    }
+
+    private fun setClickOnReverseListener() {
+        screen.btnRev?.setOnClickListener {
+            if (screen.inputText.text.isNotEmpty()) {
+                try {
+                    Model.setExpression(screen.inputText.text.toString())
+                    val res = Model.calculate()
+                    Model.setExpression("1/${res}")
+                    val reversedNum = Model.calculate()
+                    screen.inputText.setText(reversedNum)
+                    screen.outputText.setText(reversedNum)
+                } catch (e: Exception) {
+                    screen.outputText.setText(R.string.wrong_input)
+                }
+            }
+        }
+    }
+
     private fun numBtnListener(btnTag: String): View.OnClickListener {
         return View.OnClickListener {
             // если мы не ноль кликаем с самого начала
@@ -209,11 +267,10 @@ open class ClickController(private val screen: ActivityMainBinding) {
         if (kotlin.math.abs(position) <= inputTextLength) {
 
             val pivot = if (position >= 0) position else inputTextLength + position + 1
-
             screen.inputText.setText(
-                    screen.inputText.text.substring(0, pivot)
-                            .plus(value)
-                            .plus(screen.inputText.text.substring(pivot))
+                screen.inputText.text.substring(0, pivot)
+                    .plus(value)
+                    .plus(screen.inputText.text.substring(pivot))
             )
             return true
         }
@@ -265,8 +322,9 @@ open class ClickController(private val screen: ActivityMainBinding) {
         var result = ""
         for (char_ in screen.inputText.text.reversed()) {
             if (!isOperator(char_.toString())
-                    && char_.toString() != "("
-                    && char_.toString() != ")") {
+                && char_.toString() != "("
+                && char_.toString() != ")"
+            ) {
                 result = result.plus(char_)
             } else {
                 break

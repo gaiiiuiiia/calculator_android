@@ -115,6 +115,30 @@ class MainActivity : AppCompatActivity() {
             Model.setExpression("2+5*((3.1-8.1)*9-6)+5-2*2")
             testResult.add(Model.calculate() == "-252")
 
+            Model.setExpression("20^(2)")
+            testResult.add(Model.calculate() == "400")
+
+            Model.setExpression("0^(0)")
+            testResult.add(Model.calculate() == "1")
+
+            Model.setExpression("1^(0)")
+            testResult.add(Model.calculate() == "1")
+
+            Model.setExpression("(-3)^(2)")
+            testResult.add(Model.calculate() == "9")
+
+            Model.setExpression("(-3)^(3)")
+            testResult.add(Model.calculate() == "-27")
+
+            Model.setExpression("1/(-4)")
+            testResult.add(Model.calculate() == "-0.25")
+
+            Model.setExpression("1/5^2")
+            testResult.add(Model.calculate() == "0.04")
+
+            Model.setExpression("1/100")
+            testResult.add(Model.calculate() == "0.01")
+
             return testResult.all { it }
         }
 
@@ -125,7 +149,6 @@ class MainActivity : AppCompatActivity() {
             testClearNumber(),
             testCalculate()
         )
-
 
         if (results.any { !it }) {
             throw Exception("bad model tests")

@@ -4,9 +4,7 @@ import com.example.calculator_1.core.base.util.ArrayListStack
 import com.example.calculator_1.core.data.Operator
 import java.lang.Exception
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.floor
+import kotlin.math.pow
 
 class Model {
 
@@ -134,6 +132,7 @@ class Model {
                 Operator.SUB.value -> result = subtr(num2, num1)
                 Operator.MUL.value -> result = mltpl(num2, num1)
                 Operator.DIV.value -> result = dvsn(num2, num1)
+                Operator.POW.value -> result = powr(num2, num1)
             }
 
             return result
@@ -160,6 +159,7 @@ class Model {
         fun subtr(num1: Double, num2: Double): Double = num1 - num2
         fun mltpl(num1: Double, num2: Double): Double = num1 * num2
         fun dvsn(num1: Double, num2: Double): Double = num1 / num2
+        fun powr(num1: Double, num2: Double): Double = num1.pow(num2)
 
         fun isOperator(elem: String): Boolean {
             return Operator.values().any { it.value == elem }

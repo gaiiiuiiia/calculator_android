@@ -5,4 +5,5 @@ enum class Operator(val value: String) {
     MUL("*"),
     SUB("-"),
     ADD("+"),
+    POW("^"),
 }
