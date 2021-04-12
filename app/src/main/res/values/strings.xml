@@ -12,6 +12,9 @@
     <string name="sign_eq">&#61;</string>
     <string name="sign_switchSign">&#43;&#47;&#8722;</string>
     <string name="sign_point">.</string>
+    <string name="sign_pow">&#8339;&#8319;</string>
+    <string name="sign_sqrt">&#8730;</string>
+    <string name="sign_rev">&#185;/&#8339;</string>
 
     <string name="btn_clear_prev">&#10007;</string>
 
