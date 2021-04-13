@@ -59,13 +59,17 @@ open class ClickController(private val screen: ActivityMainBinding) {
                 Model.setExpression(screen.inputText.text.toString())
                 val result = Model.calculate()
 
-                screen.inputText.setText(result)
+                if (result.toDouble().isFinite()) {
+                    screen.inputText.setText(result)
 
-                if (result[0].toString() == "-") {
-                    addToInput(value="(")
-                    addToInput(-1, value=")")
+                    if (result[0].toString() == "-") {
+                        addToInput(value="(")
+                        addToInput(-1, value=")")
+                    }
+                    screen.outputText.text.clear()
+                } else {
+                    throw Exception("to infinity and beyond")
                 }
-                screen.outputText.text.clear()
 
             } catch (e: Exception) {
                 screen.outputText.setText(R.string.wrong_input)
