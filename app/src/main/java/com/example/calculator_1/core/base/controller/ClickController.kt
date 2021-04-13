@@ -9,6 +9,7 @@ import com.example.calculator_1.R
 import com.example.calculator_1.core.base.model.Model
 import com.example.calculator_1.core.data.Operator
 import com.example.calculator_1.databinding.ActivityMainBinding
+import java.lang.Error
 import java.lang.Exception
 
 
@@ -80,7 +81,16 @@ open class ClickController(private val screen: ActivityMainBinding) {
             button.setOnClickListener {
                 var text = ""
                 when (it.tag) {
-                    "bracketOpen" -> text = "("
+
+                    // если открывающей скобке предшествует число,
+                    // то перед скобкой поставится знак умножения
+                    "bracketOpen" -> text =
+                        if ( screen.inputText.text.isNotEmpty()
+                        && isNumber(screen.inputText.text[screen.inputText.text.lastIndex].toString()) )
+                            "*("
+                        else
+                            "("
+
                     "bracketClose" -> text = ")"
                 }
                 screen.inputText.text = screen.inputText.text.append(text)
@@ -356,6 +366,11 @@ open class ClickController(private val screen: ActivityMainBinding) {
         return Operator.values().any { it.value == char }
     }
 
-    private fun isNumber(str: String?) = str?.toDoubleOrNull()?.let { true } ?: false
-
+    private fun isNumber(str: String): Boolean {
+        return try{
+            str.toDoubleOrNull() is Double
+        } catch (e: Exception) {
+            false
+        }
+    }
 }
