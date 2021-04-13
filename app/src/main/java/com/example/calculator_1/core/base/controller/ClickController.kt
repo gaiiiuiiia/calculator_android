@@ -56,8 +56,16 @@ open class ClickController(private val screen: ActivityMainBinding) {
         screen.btnEq.setOnClickListener {
             try {
                 Model.setExpression(screen.inputText.text.toString())
+                val result = Model.calculate()
+
+                screen.inputText.setText(result)
+
+                if (result[0].toString() == "-") {
+                    addToInput(value="(")
+                    addToInput(-1, value=")")
+                }
                 screen.outputText.text.clear()
-                screen.inputText.setText(Model.calculate().toString())
+
             } catch (e: Exception) {
                 screen.outputText.setText(R.string.wrong_input)
             }
