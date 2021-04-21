@@ -6,4 +6,5 @@ enum class Operator(val value: String) {
     SUB("-"),
     ADD("+"),
     POW("^"),
+    SQRT("r"),
 }

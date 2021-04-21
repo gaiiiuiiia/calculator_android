@@ -1,15 +1,11 @@
 package com.example.calculator_1.core.base.controller
 
-
-import android.animation.LayoutTransition
-import android.view.Display
 import android.view.View
 import androidx.core.widget.addTextChangedListener
 import com.example.calculator_1.R
 import com.example.calculator_1.core.base.model.Model
 import com.example.calculator_1.core.data.Operator
 import com.example.calculator_1.databinding.ActivityMainBinding
-import java.lang.Error
 import java.lang.Exception
 
 
@@ -183,21 +179,20 @@ open class ClickController(private val screen: ActivityMainBinding) {
 
     private fun setClickOnPointListener() {
         screen.btnPoint.setOnClickListener {
-
-            var value = ""
-
-            value = when {
-                screen.inputText.text.isEmpty() -> {
-                    "0."
-                }
-                screen.inputText.text[screen.inputText.text.lastIndex].toString() != "." -> {
-                    screen.inputText.text.toString().plus(".")
-                }
-                else -> {
-                    screen.inputText.text.substring(0, screen.inputText.text.lastIndex)
-                }
+            if (screen.inputText.text.isEmpty()) {
+                addToInput(value="0.")
             }
-            screen.inputText.setText(value)
+            else if (!getLastInputNumber().contains(".")
+                && !isOperator( getLastInputToken() )
+                && ( getLastInputToken() != "(" || getLastInputToken() != ")" ) ) {
+                addToInput(-1, ".")
+            }
+            else if (screen.inputText.text.toString() == "0.") {
+                screen.inputText.text.clear()
+            }
+            else if (screen.inputText.text[screen.inputText.text.lastIndex].toString() == ".") {
+                deleteFromInput(screen.inputText.text.length - 1)
+            }
         }
     }
 
@@ -220,16 +215,15 @@ open class ClickController(private val screen: ActivityMainBinding) {
 
     private fun setClickOnSqrtListener() {
         screen.btnSqrt?.setOnClickListener {
-            if (screen.inputText.text.isNotEmpty()) {
-                try{
-                    Model.setExpression(screen.inputText.text.toString())
-                    val res = Model.calculate()
-                    Model.setExpression("${res}^(0.5)")
-                    val sqrt = Model.calculate()
-                    screen.inputText.setText(sqrt)
-                    screen.outputText.setText(sqrt)
-                } catch (e: Exception) {
-                    screen.outputText.setText(R.string.wrong_input)
+            when {
+                isNumber(getLastInputToken()) -> {
+                    addToInput(-1, Operator.MUL.value.plus(Operator.SQRT.value).plus("("))
+                }
+                screen.inputText.text.isEmpty() -> {
+                    addToInput(value=Operator.SQRT.value.plus("("))
+                }
+                else -> {
+                    addToInput(-1, value=Operator.SQRT.value.plus("("))
                 }
             }
         }
@@ -241,6 +235,9 @@ open class ClickController(private val screen: ActivityMainBinding) {
                 try {
                     Model.setExpression(screen.inputText.text.toString())
                     val res = Model.calculate()
+                    if (res.toDouble() == 0.0) {
+                        throw Exception("Probably will divided by zero")
+                    }
                     Model.setExpression("1/${res}")
                     val reversedNum = Model.calculate()
                     screen.inputText.setText(reversedNum)

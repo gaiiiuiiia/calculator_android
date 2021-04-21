@@ -15,7 +15,12 @@ class Model {
             "-" to 1,
             "*" to 2,
             "/" to 2,
-            "^" to 3
+            "^" to 3,
+            "r" to 3    // square root
+        )
+
+        private var unaryOperators = listOf(
+            Operator.SQRT.value
         )
 
         private lateinit var expression: String
@@ -26,7 +31,7 @@ class Model {
 
         fun calculate(): String {
             val operatorStack: ArrayListStack<String> = ArrayListStack()
-            var numbersStack: ArrayListStack<String> = ArrayListStack()
+            var numberStack: ArrayListStack<String> = ArrayListStack()
 
             var index = 0
             while (index != this.expression.length) {
@@ -36,7 +41,7 @@ class Model {
                 // проверка на число/точку
                 if (isNum(currentSymbol) || currentSymbol == ".") {
                     val (number, index_) = extractNumber(this.expression, index)
-                    numbersStack.push(number)
+                    numberStack.push(number)
                     index = index_
                 }
 
@@ -44,9 +49,11 @@ class Model {
                 else if (isOperator(currentSymbol)) {
 
                     if (index + 1 < this.expression.length) {
-                        if (currentSymbol == "-" && index != 0 && this.expression[index - 1].toString() == "(") {
+                        if (currentSymbol == "-" && index != 0
+                            && this.expression[index - 1].toString() == "(")
+                        {
                             val (number, index_) = extractNumber(this.expression, index + 1)
-                            numbersStack.push("-".plus(number))
+                            numberStack.push("-".plus(number))
                             index = index_
                             continue
                         }
@@ -65,9 +72,12 @@ class Model {
                             if (this.orderOperations[currentSymbol] ?: error("sorry, Boss!")
                                 <= this.orderOperations[operatorInStack] ?: error("sorry, Boss!")
                             ) {
-                                val eval =
-                                    evaluateTwoNumbersFromStack(numbersStack, operatorStack.pop())
-                                numbersStack.push(eval.toString())
+                                val result = if (isUnaryOperator(operatorInStack)) {
+                                    evaluateUnary(numberStack.pop(), operatorStack.pop())
+                                } else {
+                                    evaluateTwoNumbersFromStack(numberStack, operatorStack.pop())
+                                }
+                                numberStack.push(result.toString())
                             } else {
                                 break
                             }
@@ -86,10 +96,12 @@ class Model {
 
                     try {
                         while (operatorStack.top() != "(") {
-                            // сделать вычисление результата из двух чисел в стеке
-                            val eval =
-                                evaluateTwoNumbersFromStack(numbersStack, operatorStack.pop())
-                            numbersStack.push(eval.toString())
+                            val result = if (isUnaryOperator(operatorStack.top())) {
+                                evaluateUnary(numberStack.pop(), operatorStack.pop())
+                            } else {
+                                evaluateTwoNumbersFromStack(numberStack, operatorStack.pop())
+                            }
+                            numberStack.push(result.toString())
                         }
                         operatorStack.pop()
                         index++
@@ -101,13 +113,17 @@ class Model {
                     operatorStack.push(currentSymbol)
                     index++
                 }
+                // введено что-то не понятное - выходим из цикла
+                else {
+                    break;
+                }
             }
 
-            return if (!operatorStack.isEmpty() && !numbersStack.isEmpty()) {
-                numbersStack = collectResultFromStacks(numbersStack, operatorStack)
-                clearNumber(numbersStack.pop())
-            } else if (operatorStack.isEmpty() && !numbersStack.isEmpty()) {
-                clearNumber(numbersStack.pop())
+            return if (!operatorStack.isEmpty() && !numberStack.isEmpty()) {
+                numberStack = collectResultFromStacks(numberStack, operatorStack)
+                clearNumber(numberStack.pop())
+            } else if (operatorStack.isEmpty() && !numberStack.isEmpty()) {
+                clearNumber(numberStack.pop())
             } else {
                 throw Exception("incorrect output")
             }
@@ -138,6 +154,13 @@ class Model {
             return result
         }
 
+        fun evaluateUnary(number: String, operator: String): Double? {
+            when (operator) {
+                Operator.SQRT.value -> return powr(number.toDouble(), 0.5)
+            }
+            return null
+        }
+
         /**
          * подсчет результата со стеков
          */
@@ -147,8 +170,14 @@ class Model {
         ): ArrayListStack<String> {
             try {
                 while (operatorStack.top().isNotEmpty()) {
-                    val res = evaluateTwoNumbersFromStack(numberStack, operatorStack.pop())
-                    numberStack.push(res.toString())
+                    val currentOperator = operatorStack.pop()
+
+                    val result = if (isUnaryOperator(currentOperator)) {
+                        evaluateUnary(numberStack.pop(), currentOperator)
+                    } else {
+                        evaluateTwoNumbersFromStack(numberStack, currentOperator)
+                    }
+                    numberStack.push(result.toString())
                 }
             } catch (e: EmptyStackException) {
             }
@@ -163,6 +192,10 @@ class Model {
 
         fun isOperator(elem: String): Boolean {
             return Operator.values().any { it.value == elem }
+        }
+
+        private fun isUnaryOperator(elem: String): Boolean {
+            return unaryOperators.any { it == elem }
         }
 
         fun isNum(elem: String): Boolean {

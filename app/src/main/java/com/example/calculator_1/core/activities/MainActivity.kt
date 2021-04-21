@@ -152,6 +152,18 @@ class MainActivity : AppCompatActivity() {
             Model.setExpression("1/100")
             testResult.add(Model.calculate() == "0.01")
 
+            Model.setExpression("r(4)")
+            testResult.add(Model.calculate() == "2")
+
+            Model.setExpression("r(4)+r(9)")
+            testResult.add(Model.calculate() == "5")
+
+            Model.setExpression("r(4+5)+r(9+7)")
+            testResult.add(Model.calculate() == "7")
+
+            Model.setExpression("r(r(81))")
+            testResult.add(Model.calculate() == "3")
+
             return testResult.all { it }
         }
 
